@@ -1,96 +1,9 @@
-// import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-// import { toast } from "react-toastify";
-
-// const API = "http://localhost:5000/api";
-
-// export default function EmployerDashboard() {
-//   const [data, setData] = useState(null);
-//   const token = localStorage.getItem("token");
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     fetch(`${API}/employer-dashboard`, {
-//       headers: { Authorization: `Bearer ${token}` }
-//     })
-//       .then(res => res.json())
-//       .then(setData);
-//   }, []);
-
-//   if (!data) return <p className="p-6">Loading dashboard...</p>;
-
-//   return (
-//     <div className="p-6 space-y-6">
-
-//       <h1 className="text-2xl font-bold">Employer Dashboard</h1>
-
-//       <div className="flex gap-4 mb-4">
-//         <button
-//           onClick={() => navigate("/post-job")}
-//           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-//         >
-//           Post a Job
-//         </button>
-
-//       <button
-//         onClick={() => navigate("/my-jobs")}
-//         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-//       >
-//         View All My Jobs
-//       </button>
-//       </div>
-
-//       <div className="grid grid-cols-2 gap-4">
-
-//       <div className="bg-blue-100 p-4 rounded">
-//         <h2 className="text-lg">Jobs Posted</h2>
-//         <p className="text-3xl font-bold">{data.totalJobs}</p>
-//       </div>
-
-//       <div className="bg-green-100 p-4 rounded">
-//         <h2 className="text-lg">Applications</h2>
-//         <p className="text-3xl font-bold">{data.totalApplications}</p>
-//       </div>
-
-//       <div className="bg-emerald-100 p-4 rounded">
-//         <h2 className="text-lg">Accepted</h2>
-//         <p className="text-3xl font-bold">{data.accepted}</p>
-//       </div>
-
-//       <div className="bg-red-100 p-4 rounded">
-//         <h2 className="text-lg">Rejected</h2>
-//         <p className="text-3xl font-bold">{data.rejected}</p>
-//       </div>
-
-//     </div>
-
-
-//       <div>
-//         <h2 className="text-xl font-semibold mb-2">Recent Jobs</h2>
-
-//         {data.recentJobs.map(job => (
-//           <div key={job._id} className="border p-3 rounded mb-2">
-//             <p className="font-semibold">{job.title}</p>
-//             <p className="text-sm">{job.location} — {job.salary}</p>
-//             <p className="text-gray-600 text-sm line-clamp-2">
-//               {job.description}
-//             </p>
-//           </div>
-//         ))}
-//       </div>
-
-//     </div>
-//   );
-// }
-
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const API = "http://localhost:5000/api";
+const API = "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api";
 
 export default function EmployerDashboard() {
   const [data, setData] = useState(null);

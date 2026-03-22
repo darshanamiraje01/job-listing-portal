@@ -1,82 +1,3 @@
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-// import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
-
-// export default function PostJob() {
-//   const [form, setForm] = useState({
-//     title: "",
-//     company: "",
-//     location: "",
-//     salary: "",
-//     description: "",
-//   });
-
-//   const navigate = useNavigate();
-//   const token = localStorage.getItem("token");
-//   const user = JSON.parse(localStorage.getItem("user"));
-
-//   useEffect(() => {
-//     if(!user || user.role !== "employer"){
-//       toast.error("Only employers can post jobs");
-//       navigate("/");
-//     }
-//   }, []);
-
-//  const handleSubmit = async (e) => {
-//   e.preventDefault();
-
-//   if (!token) {
-//     toast.error("Please login to post a job");
-//     return;
-//   }
-
-//   try {
-//     await axios.post(
-//       "http://localhost:5000/api/jobs",
-//       form,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-
-//     toast.success("Job posted!");
-//     navigate("/jobs");
-
-//   } catch (err) {
-//     console.error(err);
-//     toast.error(err.response?.data?.message || "Failed to post job");
-//   }
-// };
-
-//   if(!user || user.role != "employer") {
-//     toast.error("Only employers can post jobs");
-//     navigate("/");
-//     return null;
-//   }
-
-
-//   return (
-//     <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 space-y-3">
-//       <input placeholder="Title" className="border p-2 w-full"
-//         onChange={e => setForm({ ...form, title: e.target.value })} />
-//       <input placeholder="Company" className="border p-2 w-full"
-//         onChange={e => setForm({ ...form, company: e.target.value })} />
-//       <input placeholder="Location" className="border p-2 w-full"
-//         onChange={e => setForm({ ...form, location: e.target.value })} />
-//       <input placeholder="Salary" className="border p-2 w-full"
-//         onChange={e => setForm({ ...form, salary: e.target.value })} />
-//       <textarea placeholder="Description" className="border p-2 w-full"
-//         onChange={e => setForm({ ...form, description: e.target.value })} />
-//       <button className="bg-blue-600 text-white p-2 w-full rounded">
-//         Post Job
-//       </button>
-//     </form>
-//   );
-// }
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -124,7 +45,7 @@ export default function PostJob() {
 
      try {
       await axios.post(
-        "http://localhost:5000/api/jobs",
+        "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/jobs",
         form,
         {
           headers: {

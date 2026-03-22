@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API = "http://localhost:5000/api";
+const API = "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api";
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
@@ -46,51 +46,6 @@ export default function MyJobs() {
   useEffect(() => {
     fetchMyJobs();
   }, []);
-
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-2xl font-bold mb-4">My Posted Jobs</h1>
-
-//       {jobs.length === 0 && <p>No jobs posted yet.</p>}
-
-//       {jobs.map(job => (
-//         <div key={job._id} className="border p-4 rounded mb-4">
-//           <h2 className="font-bold">{job.title}</h2>
-//           <p>{job.company} — {job.location}</p>
-//           <p>{job.salary}</p>
-//           <p className="text-gray-600">{job.description?.slice(0, 100)}...</p>
-          
-//           <div className="mt-2 flex gap-2">
-//           <button
-//             onClick={() => navigate(`/edit-job/${job._id}`)}
-//             className="bg-blue-600 text-white px-4 py-1 rounded"
-//           >
-//             Edit
-//           </button>
-
-//           <button
-//           onClick={() => navigate(`/view-job/${job._id}`)}
-//           className="bg-blue-600 text-white px-4 py-1 rounded">
-//             View
-//           </button>
-
-//           <button
-//           onClick={() => handleDelete(job._id)}
-//           className="bg-red-600 text-white px-4 py-1 rounded"
-//         >
-//           Delete
-//         </button>
-
-//         <button 
-//         onClick={() => navigate(`/job-applicants/${job._id}`)}
-//         className="bg-green-600 text-white px-4 py-1 rounded">
-//           View Applicants
-//         </button>
-//         </div>
-//       </div>
-//       ))}
-//     </div>
-//   );
 
  return (
     <div className="p-6 bg-gray-50 min-h-screen">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const API = "http://localhost:5000/api";
+const API = "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api";
 
 export default function EditJob() {
   const { id } = useParams();
