@@ -18,7 +18,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://your-app.vercel.app'
+    'https://job-listing-portal-rho.vercel.app'
   ],
   credentials: true
 }));
