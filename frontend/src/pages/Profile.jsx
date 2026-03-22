@@ -48,7 +48,7 @@ export default function Profile() {
       setLoading(false);
       return;
     }
-    axios.get("${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile", {
+    axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
@@ -71,7 +71,7 @@ export default function Profile() {
   const saveProfile = async () => {
     try {
       const res = await axios.put(
-        "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile",
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile",
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -252,7 +252,7 @@ export default function Profile() {
 
             try {
               const res = await axios.put(
-                "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resume", // backend endpoint
+                `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resume", // backend endpoint
                 formDataUpload,
                 {
                   headers: {

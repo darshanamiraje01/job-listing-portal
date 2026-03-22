@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPhone, FaLinkedin, FaFileAlt } from "react-icons/fa";
 
-const API_URL = "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api";
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
 export default function AppliedJobs() {
   const [applications, setApplications] = useState([]);
@@ -14,7 +14,7 @@ export default function AppliedJobs() {
   const fetchApplications = async () => {
     try {
       const res = await axios.get(`${API_URL}/my-applications`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`},
       });
       setApplications(res.data);
     } catch (err) {
@@ -124,7 +124,7 @@ export default function AppliedJobs() {
 // import { motion, AnimatePresence } from "framer-motion";
 // import { FaPhone, FaLinkedin, FaFileAlt, FaCheck, FaTimes, FaClock } from "react-icons/fa";
 
-// const API_URL = "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api";
+// const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
 // export default function AppliedJobs() {
 //   const [applications, setApplications] = useState([]);
