@@ -5,7 +5,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
-//import dashboardRoutes from "./routes/dashboardRoutes.js"
 import resumeRoutes from "./routes/resumeRoutes.js";
 import path from "path";
 
@@ -36,5 +35,5 @@ app.use("/api", applicationRoutes);
 
 //app.use("/api", dashboardRoutes);
 
-app.listen(5000, () => console.log("Server running on port 5000"));
-
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log('Server running on port ' + PORT));
