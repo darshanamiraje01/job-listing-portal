@@ -48,7 +48,7 @@ export default function Profile() {
       setLoading(false);
       return;
     }
-    axios.get("${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/profile", {
+    axios.get("${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
@@ -71,7 +71,7 @@ export default function Profile() {
   const saveProfile = async () => {
     try {
       const res = await axios.put(
-        "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/profile",
+        "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile",
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -116,7 +116,7 @@ export default function Profile() {
             className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl font-bold overflow-hidden"
           >
             {user.profile?.avatar ? (
-              <img src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${user.profile.avatar}`} className="w-full h-full object-cover"/>
+              <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.profile.avatar}`} className="w-full h-full object-cover"/>
             ) : getInitials(user.name)}
           </motion.div>
 
@@ -252,7 +252,7 @@ export default function Profile() {
 
             try {
               const res = await axios.put(
-                "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/resume", // backend endpoint
+                "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/resume", // backend endpoint
                 formDataUpload,
                 {
                   headers: {

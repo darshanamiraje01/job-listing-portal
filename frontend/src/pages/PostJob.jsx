@@ -45,7 +45,7 @@ export default function PostJob() {
 
      try {
       await axios.post(
-        "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/jobs",
+        "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/jobs",
         form,
         {
           headers: {

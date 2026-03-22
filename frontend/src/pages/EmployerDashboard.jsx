@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 
-const API = "${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api";
+const API = "${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api";
 
 export default function EmployerDashboard() {
   const [data, setData] = useState(null);

@@ -80,7 +80,7 @@ useEffect(() => {
             >
             {user?.avatar ? (
             <img
-            src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${user.profile.avatar}`}
+            src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.profile.avatar}`}
             alt="Profile"
             className="w-full h-full rounded-full object-cover"
             />
