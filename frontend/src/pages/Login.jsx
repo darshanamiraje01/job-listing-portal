@@ -1,89 +1,91 @@
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-
-// export default function Login() {
-//   const [form, setForm] = useState({ email: "", password: "" });
-//   const navigate = useNavigate();
-
-
-//   useEffect(()=>{
-//     const token = localStorage.getItem("token");
-//     if(token) navigate("/");
-//   }, []);
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try{
-//     const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login", form);
-//     localStorage.setItem("token", res.data.token);
-
-//     const profile = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/profile`, 
-//       {headers: { Authorization: `Bearer ${res.data.token}` }, 
-//     });
-//       localStorage.setItem("user", JSON.stringify(profile.data));
-//     navigate("/");
-//     window.location.reload();
-//   } catch (err) {
-//     alert("Invalid email or password");
-//     console.log(err);
-//   }
-// };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center">
-//     <form onSubmit={handleSubmit} className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 flex flex-col gap-4">
-//       <h2 className="text-center text-2xl font-semibold">Login</h2>
-
-//       <input placeholder="Email" className="border p-2 rounded" onChange={e => setForm({...form, email: e.target.value})} />
-//       <input type="password" placeholder="Password" className="border p-2 rounded" onChange={e => setForm({...form, password: e.target.value})} />
-//       <button className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Login</button>
-//     </form>
-//     </div>
-//   );
-// }
-
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { API_BASE_URL } from "../utils/constants";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/");
+    if (localStorage.getItem("token")) navigate("/");
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.email || !form.password) return toast.error("Please fill in all fields");
+    setLoading(true);
     try {
-      const res = await axios.post(`${BASE_URL}/api/auth/login`, form);
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, form);
       localStorage.setItem("token", res.data.token);
-
-      const profile = await axios.get(`${BASE_URL}/api/auth/profile`, {
-        headers: { Authorization: `Bearer ${res.data.token}` },
+      const profile = await axios.get(`${API_BASE_URL}/auth/profile`, {
+        headers: { Authorization: `Bearer ${res.data.token}` }
       });
       localStorage.setItem("user", JSON.stringify(profile.data));
+      toast.success("Welcome back! 👋");
+      // Dispatch event so Navbar re-reads localStorage
+      window.dispatchEvent(new Event("userUpdated"));
+      const role = profile.data.role;
+      setTimeout(() => {
+        navigate(profile.data.role === "employer" ? "/employer-dashboard" : "/jobs");
+      }, 100);
       navigate("/");
-      window.location.reload();
     } catch (err) {
-      alert("Invalid email or password");
-      console.log(err);
+      toast.error(err.response?.data?.message || "Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 flex flex-col gap-4">
-        <h2 className="text-center text-2xl font-semibold">Login</h2>
-        <input placeholder="Email" className="border p-2 rounded" onChange={e => setForm({ ...form, email: e.target.value })} />
-        <input type="password" placeholder="Password" className="border p-2 rounded" onChange={e => setForm({ ...form, password: e.target.value })} />
-        <button className="bg-blue-600 text-white rounded p-2 hover:bg-blue-700">Login</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-3">💼</div>
+          <h1 className="text-2xl font-bold text-text-primary">Welcome back</h1>
+          <p className="text-text-muted mt-1">Sign in to your account</p>
+        </div>
+
+        <div className="card p-8">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div className="input-group">
+              <label className="label">Email address</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="input"
+                value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="label">Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="input"
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+              />
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full mt-1">
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-text-muted mt-6">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-brand-600 font-medium hover:underline">
+              Create one
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
