@@ -1,226 +1,187 @@
-// import { motion } from "framer-motion";
-// import { Link } from "react-router-dom";
-// import Footer from "../components/Footer";
-
-// export default function Home() {
-
-//   return (
-//     <div className="bg-gradient-to-br from-blue-50 to-white">
-
-//       {/* HERO SECTION */}
-//       <section className="text-center pt-28 pb-20 px-6">
-
-//         <motion.h1
-//           initial={{ opacity: 0, y: -40 }}
-//           animate={{ opacity: 1, y: 0 }}
-//           transition={{ duration: 0.7 }}
-//           className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4"
-//         >
-//           Find Your Dream Job Today
-//         </motion.h1>
-
-//         <motion.p
-//           initial={{ opacity: 0 }}
-//           animate={{ opacity: 1 }}
-//           transition={{ delay: 0.3 }}
-//           className="text-gray-600 max-w-2xl mx-auto mb-10 text-lg"
-//         >
-//           Connecting talented professionals with top companies.  
-//           Search jobs, apply easily, and grow your career faster.
-//         </motion.p>
-
-//         {/* SEARCH BAR */}
-//         <motion.div
-//         initial={{ opacity: 0, scale: 0.95 }}
-//         animate={{ opacity: 1, scale: 1 }}
-//         transition={{ delay: 0.5 }}
-//         className="flex items-center justify-between max-w-3xl mx-auto bg-white p-5 rounded-2xl shadow-lg"
-//       >
-//         <span className="text-gray-600 text-lg font-medium">
-//           Search your dream jobs...
-//         </span>
-
-//         <Link
-//           to="/jobs"
-//           className="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 transition font-semibold"
-//         >
-//           Browse Jobs →
-//         </Link>
-//       </motion.div>
-//       </section>
-
-//       {/* STATS */}
-//       <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-20">
-
-//         {[
-//           { title: "Active Jobs", value: "1,200+" },
-//           { title: "Companies", value: "350+" },
-//           { title: "Job Seekers", value: "10,000+" },
-//         ].map((item, i) => (
-//           <motion.div
-//             key={i}
-//             whileHover={{ scale: 1.05 }}
-//             className="bg-white rounded-2xl shadow-lg p-8 text-center"
-//           >
-//             <h2 className="text-3xl font-bold text-blue-600">{item.value}</h2>
-//             <p className="text-gray-600 mt-2">{item.title}</p>
-//           </motion.div>
-//         ))}
-//       </section>
-
-//       {/* POPULAR CATEGORIES */}
-//       <section className="max-w-6xl mx-auto px-6 pb-24">
-
-//         <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
-//           Popular Job Categories
-//         </h2>
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
-//           {[
-//             "Senior Software Engineer",
-//             "UI/UX Designer",
-//             "Data Scientist",
-//             "Marketing Specialist",
-//             "DevOps Engineer",
-//             "Product Manager"
-//           ].map((job, i) => (
-//             <motion.div
-//               key={i}
-//               whileHover={{ y: -6 }}
-//               className="bg-white rounded-xl shadow-md p-6 cursor-pointer hover:shadow-xl transition"
-//             >
-//               <h3 className="font-semibold text-lg text-blue-700">{job}</h3>
-//               <p className="text-gray-500 mt-2">Explore opportunities</p>
-//             </motion.div>
-//           ))}
-
-//         </div>
-//       </section>
-//     </div>
-//   );
-// }
-
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Footer from "../components/Footer";
-import { FaBriefcase, FaBuilding, FaUsers } from "react-icons/fa"; // icons for stats
+import { motion } from "framer-motion";
+
+const features = [
+  { icon: "🔍", title: "Smart Job Discovery",    desc: "Filter by title, company, or location. Find roles that match your skills." },
+  { icon: "📋", title: "One-Click Applications", desc: "Apply with your saved profile. Track every application in one place." },
+  { icon: "🏢", title: "Powerful for Employers",  desc: "Post jobs, manage applicants, accept or reject — all from your dashboard." },
+  { icon: "🔔", title: "Real-time Status Updates",desc: "Applicants see live status changes the moment employers review them." },
+];
+
+const stats = [
+  { label: "Jobs Available",    value: "500+" },
+  { label: "Companies Hiring",  value: "120+" },
+  { label: "Applications Made", value: "2,400+" },
+  { label: "Successful Hires",  value: "340+" },
+];
+
+const steps = [
+  { step: "1", title: "Create an account",     desc: "Sign up as a job seeker or employer in under a minute." },
+  { step: "2", title: "Browse or post jobs",   desc: "Search listings or create a job posting with full details." },
+  { step: "3", title: "Apply or hire",         desc: "Submit applications or review candidates and manage status." },
+];
 
 export default function Home() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isEmployer  = user?.role === "employer";
+  const isLoggedIn  = !!localStorage.getItem("token");
+
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-white min-h-screen">
+    <div className="min-h-screen bg-white">
 
-      {/* HERO SECTION */}
-      <section className="relative text-center pt-28 pb-20 px-6 overflow-hidden">
-
-        {/* Floating shapes / mockups */}
-        <motion.div
-          initial={{ x: -100, y: 50, opacity: 0.3 }}
-          animate={{ x: 0, y: 0, opacity: 0.3 }}
-          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute top-10 left-10 w-24 h-24 bg-blue-100 rounded-full mix-blend-multiply"
-        />
-        <motion.div
-          initial={{ x: 100, y: -50, opacity: 0.3 }}
-          animate={{ x: 0, y: 0, opacity: 0.3 }}
-          transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute bottom-20 right-10 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply"
-        />
-
-        <motion.h1
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4 relative z-10"
-        >
-          Find Your Dream Job Today
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-gray-600 max-w-2xl mx-auto mb-10 text-lg relative z-10"
-        >
-          Connecting talented professionals with top companies.  
-          Search jobs, apply easily, and grow your career faster.
-        </motion.p>
-
-        {/* SEARCH BAR */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="flex items-center justify-between max-w-3xl mx-auto bg-white p-5 rounded-2xl shadow-lg relative z-10"
-        >
-          <span className="text-gray-600 text-lg font-medium">
-            Search your dream jobs...
-          </span>
-
-          <Link
-            to="/jobs"
-            className="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-700 transition font-semibold"
-          >
-            Browse Jobs →
-          </Link>
-        </motion.div>
-      </section>
-
-      {/* STATS */}
-      <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-20">
-
-        {[
-          { title: "Active Jobs", value: "1,200+", icon: <FaBriefcase size={32} className="text-blue-500" /> },
-          { title: "Companies", value: "350+", icon: <FaBuilding size={32} className="text-blue-500" /> },
-          { title: "Job Seekers", value: "10,000+", icon: <FaUsers size={32} className="text-blue-500" /> },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 120 }}
-            className="bg-white rounded-2xl shadow-lg p-8 text-center flex flex-col items-center gap-4"
-          >
-            {item.icon}
-            <h2 className="text-3xl font-bold text-blue-600">{item.value}</h2>
-            <p className="text-gray-600 mt-2">{item.title}</p>
+      {/* ─── Hero ─── */}
+      <section className="bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 text-center">
+          <motion.div initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <span className="inline-block bg-white/10 text-white/90 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wide uppercase">
+              🚀 Your career starts here
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5">
+              Find Your<br />
+              <span className="text-brand-200">Dream Job</span>
+            </h1>
+            <p className="text-brand-100 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
+              Connect with top companies and exciting opportunities.
+              Whether you're hiring or looking — JobPortal makes it simple.
+            </p>
           </motion.div>
-        ))}
-      </section>
 
-      {/* POPULAR CATEGORIES */}
-      <section className="max-w-6xl mx-auto px-6 pb-24">
-
-        <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
-          Popular Job Categories
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
-          {[
-            "Senior Software Engineer",
-            "UI/UX Designer",
-            "Data Scientist",
-            "Marketing Specialist",
-            "DevOps Engineer",
-            "Product Manager"
-          ].map((job, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ y: -6 }}
-              className="bg-white rounded-xl shadow-md p-6 cursor-pointer hover:shadow-xl transition relative"
-            >
-              {/* Small mockup icon inside card */}
-              <div className="absolute top-4 right-4 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm">{i+1}</span>
-              </div>
-              <h3 className="font-semibold text-lg text-blue-700">{job}</h3>
-              <p className="text-gray-500 mt-2">Explore opportunities</p>
-            </motion.div>
-          ))}
-
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center"
+          >
+            {!isLoggedIn ? (
+              <>
+                <Link to="/register" className="bg-white text-brand-700 font-semibold px-8 py-3 rounded-btn hover:bg-brand-50 transition-colors">
+                  Get Started — Free
+                </Link>
+                <Link to="/jobs" className="border border-white/30 text-white px-8 py-3 rounded-btn hover:bg-white/10 transition-colors">
+                  Browse Jobs
+                </Link>
+              </>
+            ) : isEmployer ? (
+              <>
+                <Link to="/post-job" className="bg-white text-brand-700 font-semibold px-8 py-3 rounded-btn hover:bg-brand-50 transition-colors">
+                  Post a Job
+                </Link>
+                <Link to="/employer-dashboard" className="border border-white/30 text-white px-8 py-3 rounded-btn hover:bg-white/10 transition-colors">
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/jobs" className="bg-white text-brand-700 font-semibold px-8 py-3 rounded-btn hover:bg-brand-50 transition-colors">
+                  Browse Jobs
+                </Link>
+                <Link to="/applied-jobs" className="border border-white/30 text-white px-8 py-3 rounded-btn hover:bg-white/10 transition-colors">
+                  My Applications
+                </Link>
+              </>
+            )}
+          </motion.div>
         </div>
       </section>
+
+      {/* ─── Stats Bar ─── */}
+      <section className="border-b border-surface-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {stats.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+            >
+              <p className="text-2xl md:text-3xl font-bold text-brand-700">{s.value}</p>
+              <p className="text-sm text-text-muted mt-1">{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Features ─── */}
+      <section className="py-20 bg-surface-muted">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-text-primary mb-3">Everything you need in one place</h2>
+            <p className="text-text-muted max-w-xl mx-auto">
+              A complete hiring platform built for both job seekers and employers.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((f, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="card p-6 text-center"
+              >
+                <div className="text-3xl mb-3">{f.icon}</div>
+                <h3 className="font-semibold text-text-primary mb-2">{f.title}</h3>
+                <p className="text-sm text-text-muted leading-relaxed">{f.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── How it works ─── */}
+      <section className="py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-text-primary mb-3">How it works</h2>
+            <p className="text-text-muted">Three steps to your next opportunity</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -12 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="w-12 h-12 rounded-full bg-brand-600 text-white font-bold text-lg flex items-center justify-center mb-4">
+                  {s.step}
+                </div>
+                <h3 className="font-semibold text-text-primary mb-2">{s.title}</h3>
+                <p className="text-sm text-text-muted">{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA Banner ─── */}
+      {!isLoggedIn && (
+        <section className="bg-brand-700 text-white py-16">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl font-bold mb-3">Ready to get started?</h2>
+              <p className="text-brand-100 mb-6">
+                Join today — it's free for job seekers, forever.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link to="/register" className="bg-white text-brand-700 font-semibold px-8 py-3 rounded-btn hover:bg-brand-50 transition-colors">
+                  Sign up for free
+                </Link>
+                <Link to="/jobs" className="border border-white/30 text-white px-8 py-3 rounded-btn hover:bg-white/10 transition-colors">
+                  Browse Jobs
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
-
