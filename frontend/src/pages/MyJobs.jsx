@@ -1,129 +1,115 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
+import { motion } from "framer-motion";
+import { API_BASE_URL } from "../utils/constants";
+import Spinner from "../components/ui/Spinner";
+import EmptyState from "../components/ui/EmptyState";
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   const fetchMyJobs = async () => {
     try {
-      const res = await fetch(`${API}/my-jobs`, {
+      const res = await fetch(`${API_BASE_URL}/my-jobs`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if(!res.ok) throw new Error("Failed to fetch jobs");
+      if (!res.ok) throw new Error();
       const data = await res.json();
       setJobs(data);
     } catch {
       toast.error("Failed to load your jobs");
+    } finally {
+      setLoading(false);
     }
   };
 
-    const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return;
-
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this job? This action cannot be undone.")) return;
     try {
-      const res = await fetch(`${API}/jobs/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/jobs/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (res.ok) {
-        toast.success("Job deleted successfully");
-        setJobs(jobs.filter(job => job._id !== id)); // remove from state
+        toast.success("Job deleted");
+        setJobs(jobs => jobs.filter(j => j._id !== id));
       } else {
         toast.error("Failed to delete job");
       }
-    } catch (err) {
+    } catch {
       toast.error("Error deleting job");
     }
   };
 
-  useEffect(() => {
-    fetchMyJobs();
-  }, []);
+  useEffect(() => { fetchMyJobs(); }, []);
 
- return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">My Posted Jobs</h1>
+  if (loading) return <div className="page-container"><Spinner text="Loading your jobs..." /></div>;
 
-      {jobs.length === 0 && (
-        <p className="text-gray-500 text-lg">No jobs posted yet.</p>
-      )}
+  return (
+    <div className="page-container">
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="page-header">My Posted Jobs</h1>
+          <p className="text-text-muted text-sm mt-1">{jobs.length} {jobs.length === 1 ? "job" : "jobs"} posted</p>
+        </div>
+        <button onClick={() => navigate("/post-job")} className="btn-primary">+ Post a Job</button>
+      </motion.div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {jobs.map((job, index) => (
+      {jobs.length === 0 ? (
+        <EmptyState
+          icon="📋"
+          title="No jobs posted yet"
+          description="Post your first job to start receiving applications."
+          action={<button onClick={() => navigate("/post-job")} className="btn-primary mt-2">Post a Job</button>}
+        />
+      ) : (
+        <motion.div
+          initial="hidden" animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
+          className="space-y-4"
+        >
+          {jobs.map(job => (
             <motion.div
               key={job._id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative border rounded-lg p-5 shadow-sm bg-white hover:shadow-md transition-transform"
+              variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+              className="card p-5"
             >
-              {/* Job Title and Badges */}
-              <h2 className="text-xl font-semibold text-gray-800">{job.title}</h2>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="flex-1">
+                  <h2 className="font-semibold text-text-primary">{job.title}</h2>
+                  <p className="text-sm text-text-secondary mt-0.5">{job.company}</p>
+                  <p className="text-sm text-text-muted mt-0.5">
+                    📍 {job.location}{job.salary ? ` · 💰 ${job.salary}` : ""}
+                  </p>
+                  {job.description && (
+                    <p className="text-sm text-text-muted mt-2 line-clamp-2">{job.description}</p>
+                  )}
+                </div>
 
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
-                  {job.location}
-                </span>
-                <span className="bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
-                  {job.salary}
-                </span>
-                {job.company && (
-                  <span className="bg-gray-100 text-gray-700 text-sm px-2 py-1 rounded-full">
-                    {job.company}
-                  </span>
-                )}
-              </div>
-
-              <p className="text-gray-600 mt-2">{job.description?.slice(0, 120)}...</p>
-
-              {/* Buttons */}
-              <div className="mt-4 flex gap-2 flex-wrap">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="bg-blue-500 text-white px-3 py-1.5 rounded hover:bg-blue-600 transition text-sm"
-                  onClick={() => navigate(`/edit-job/${job._id}`)}
-                >
-                  Edit
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="bg-blue-400 text-white px-3 py-1.5 rounded hover:bg-blue-500 transition text-sm"
-                  onClick={() => navigate(`/view-job/${job._id}`)}
-                >
-                  View
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="bg-red-500 text-white px-3 py-1.5 rounded hover:bg-red-600 transition text-sm"
-                  onClick={() => handleDelete(job._id)}
-                >
-                  Delete
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  className="bg-green-500 text-white px-3 py-1.5 rounded hover:bg-green-600 transition text-sm"
-                  onClick={() => navigate(`/job/${job._id}/applicants`)}
-                >
-                  Applicants
-                </motion.button>
+                {/* Action buttons */}
+                <div className="flex flex-wrap gap-2 sm:flex-col sm:w-36">
+                  <button onClick={() => navigate(`/job-applicants/${job._id}`)} className="btn-primary text-xs flex-1 sm:flex-none">
+                    👥 Applicants
+                  </button>
+                  <button onClick={() => navigate(`/edit-job/${job._id}`)} className="btn-outline text-xs flex-1 sm:flex-none">
+                    ✏️ Edit
+                  </button>
+                  <button onClick={() => navigate(`/view-job/${job._id}`)} className="btn-ghost text-xs flex-1 sm:flex-none">
+                    👁️ View
+                  </button>
+                  <button onClick={() => handleDelete(job._id)} className="btn-danger text-xs flex-1 sm:flex-none">
+                    🗑️ Delete
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
-        </AnimatePresence>
-      </div>
+        </motion.div>
+      )}
     </div>
   );
-
 }
