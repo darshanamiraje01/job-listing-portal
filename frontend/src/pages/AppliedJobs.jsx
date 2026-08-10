@@ -1,245 +1,95 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaPhone, FaLinkedin, FaFileAlt } from "react-icons/fa";
-
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
+import { motion } from "framer-motion";
+import { API_BASE_URL } from "../utils/constants";
+import Spinner from "../components/ui/Spinner";
+import EmptyState from "../components/ui/EmptyState";
+import Badge from "../components/ui/Badge";
 
 export default function AppliedJobs() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
 
-  const fetchApplications = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/my-applications`, {
-        headers: { Authorization: `Bearer ${token}`},
-      });
-      setApplications(res.data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to fetch applied jobs");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const resolveUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  return `${API_BASE_URL.replace("/api", "")}${path}`;
+};
 
   useEffect(() => {
-    fetchApplications();
+    axios.get(`${API_BASE_URL}/my-applications`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => setApplications(res.data))
+    .catch(() => toast.error("Failed to fetch applied jobs"))
+    .finally(() => setLoading(false));
   }, []);
 
-  if (loading)
-    return <p className="p-6 text-center text-gray-600">Loading applied jobs...</p>;
-
-  const getStatusBadge = (status) => {
-    if (status === "accepted")
-      return <span className="px-3 py-1 rounded-full text-white bg-green-600 text-sm font-semibold">Accepted</span>;
-    if (status === "rejected")
-      return <span className="px-3 py-1 rounded-full text-white bg-red-600 text-sm font-semibold">Rejected</span>;
-    return <span className="px-3 py-1 rounded-full text-yellow-800 bg-yellow-100 text-sm font-semibold">Pending</span>;
-  };
+  if (loading) return <div className="page-container"><Spinner text="Loading your applications..." /></div>;
 
   return (
-    <div className="p-8 min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6 text-center">My Applied Jobs</h1>
+    <div className="page-container">
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="page-header mb-1">My Applications</h1>
+        <p className="text-text-muted text-sm mb-6">{applications.length} application{applications.length !== 1 ? "s" : ""}</p>
+      </motion.div>
 
       {applications.length === 0 ? (
-        <p className="text-gray-600 text-center mt-10">
-          You haven't applied to any jobs yet.
-        </p>
+        <EmptyState
+          icon="📨"
+          title="No applications yet"
+          description="Start applying to jobs to track them here."
+        />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {applications.map((app) => (
-              <motion.div
-                key={app._id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.4 }}
-                className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between"
-              >
-                {/* JOB INFO */}
+        <motion.div
+          initial="hidden" animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+          className="space-y-4"
+        >
+          {applications.map((app) => (
+            <motion.div
+              key={app._id}
+              variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}
+              className="card p-5"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div>
-                  <h2 className="text-xl font-semibold text-blue-700">{app.job.title}</h2>
-                  <p className="text-gray-600">{app.job.company} — {app.job.location}</p>
-                  <p className="text-gray-500 mt-1">{app.job.salary}</p>
+                  <h2 className="font-semibold text-text-primary">{app.job?.title}</h2>
+                  <p className="text-sm text-text-secondary mt-0.5">
+                    {app.job?.company} · 📍 {app.job?.location}
+                  </p>
+                  {app.job?.salary && (
+                    <p className="text-sm font-medium text-brand-700 mt-0.5">💰 {app.job.salary}</p>
+                  )}
+                </div>
+                <Badge
+                  status={app.status}
+                  label={app.status === "applied" ? "Pending Review" : app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                />
+              </div>
 
-                  {/* STATUS BADGE */}
+              <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-text-muted">
+                {app.contact?.phone    && <span>📞 {app.contact.phone}</span>}
+                {app.contact?.linkedin && <span>🔗 {app.contact.linkedin}</span>}
+                {resolveUrl(app.resume) && (
                   <div className="mt-3">
-                      {getStatusBadge(app.status)}
+                    <a 
+                      href={resolveUrl(app.resume)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-brand-600 font-medium hover:underline"
+                    >
+                      📄 View Resume
+                    </a>
                   </div>
-
-                  {/* CONTACT INFO */}
-                  {app.contact && (
-                    <div className="mt-3 text-sm text-gray-700 space-y-1">
-                      <h3 className="font-semibold">Contact Info</h3>
-                      <p className="flex items-center gap-1">
-                        <FaPhone className="text-gray-500" /> {app.contact.phone || "N/A"}
-                      </p>
-                      <p className="flex items-center gap-1">
-                        <FaLinkedin className="text-blue-600" />{" "}
-                        {app.contact.linkedin || "N/A"}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* RESUME LINK */}
-                  {app.resume && (
-                    <div className="mt-2 flex items-center gap-1">
-                      <FaFileAlt className="text-gray-600" />
-                      <a
-                        href={app.resume}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        View Resume
-                      </a>
-                    </div>
-                  )}
-                </div>
-
-                {/* APPLY DATE OR MOCKUP BADGE */}
-                <div className="mt-4 flex justify-end">
-                  <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">
-                    Applied on {new Date(app.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       )}
     </div>
   );
 }
-
-
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-// import { toast } from "react-toastify";
-// import { motion, AnimatePresence } from "framer-motion";
-// import { FaPhone, FaLinkedin, FaFileAlt, FaCheck, FaTimes, FaClock } from "react-icons/fa";
-
-// const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
-
-// export default function AppliedJobs() {
-//   const [applications, setApplications] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const token = localStorage.getItem("token");
-
-//   const fetchApplications = async () => {
-//     try {
-//       const res = await axios.get(`${API_URL}/my-applications`, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       });
-//       setApplications(res.data);
-//     } catch (err) {
-//       console.error(err);
-//       toast.error("Failed to fetch applied jobs");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchApplications();
-//   }, []);
-
-//   if (loading)
-//     return <p className="p-6 text-center text-gray-600">Loading applied jobs...</p>;
-
-//   const getStatusBadge = (status) => {
-//     if (status === "accepted")
-//       return (
-//         <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-600 text-white text-sm font-semibold shadow-sm">
-//           <FaCheck /> Accepted
-//         </span>
-//       );
-//     if (status === "rejected")
-//       return (
-//         <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-red-600 text-white text-sm font-semibold shadow-sm">
-//           <FaTimes /> Rejected
-//         </span>
-//       );
-//     return (
-//       <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 text-sm font-semibold shadow-sm">
-//         <FaClock /> Pending
-//       </span>
-//     );
-//   };
-
-//   return (
-//     <div className="p-8 min-h-screen bg-gray-50">
-//       <h1 className="text-3xl font-bold mb-8 text-center text-blue-700">My Applied Jobs</h1>
-
-//       {applications.length === 0 ? (
-//         <p className="text-gray-600 text-center mt-10">
-//           You haven't applied to any jobs yet.
-//         </p>
-//       ) : (
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//           <AnimatePresence>
-//             {applications.map((app) => (
-//               <motion.div
-//                 key={app._id}
-//                 initial={{ opacity: 0, y: 40 }}
-//                 animate={{ opacity: 1, y: 0 }}
-//                 exit={{ opacity: 0, y: 20 }}
-//                 whileHover={{ scale: 1.03 }}
-//                 transition={{ duration: 0.4 }}
-//                 className="bg-white rounded-2xl shadow-lg p-6 flex flex-col justify-between border-l-4 border-blue-600 relative"
-//               >
-//                 {/* Ribbon for applied date */}
-//                 <div className="absolute top-3 right-3 bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full shadow-sm">
-//                   Applied: {new Date(app.createdAt).toLocaleDateString()}
-//                 </div>
-
-//                 {/* JOB INFO */}
-//                 <div className="space-y-2">
-//                   <h2 className="text-xl font-semibold text-blue-700">{app.job.title}</h2>
-//                   <p className="text-gray-600">{app.job.company} — {app.job.location}</p>
-//                   <p className="text-gray-500">{app.job.salary}</p>
-
-//                   {/* STATUS BADGE */}
-//                   <div className="mt-2">{getStatusBadge(app.status)}</div>
-
-//                   {/* CONTACT INFO */}
-//                   {app.contact && (
-//                     <div className="mt-3 text-sm text-gray-700 space-y-1">
-//                       <h3 className="font-semibold">Contact Info</h3>
-//                       <p className="flex items-center gap-1 hover:text-blue-600 transition">
-//                         <FaPhone className="text-gray-500" /> {app.contact.phone || "N/A"}
-//                       </p>
-//                       <p className="flex items-center gap-1 hover:text-blue-600 transition">
-//                         <FaLinkedin className="text-blue-600" /> {app.contact.linkedin || "N/A"}
-//                       </p>
-//                     </div>
-//                   )}
-
-//                   {/* RESUME LINK */}
-//                   {app.resume && (
-//                     <div className="mt-2 flex items-center gap-1 hover:scale-105 transition-transform">
-//                       <FaFileAlt className="text-gray-600" />
-//                       <a
-//                         href={app.resume}
-//                         target="_blank"
-//                         rel="noreferrer"
-//                         className="text-blue-600 underline"
-//                       >
-//                         View Resume
-//                       </a>
-//                     </div>
-//                   )}
-//                 </div>
-//               </motion.div>
-//             ))}
-//           </AnimatePresence>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
