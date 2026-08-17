@@ -71,7 +71,7 @@ function App() {
             </ProtectedRoute>
           } />
           {/* <Route path="/job-applicants/:jobId" element={<JobApplicants />}/> */}
-          <Route path="/job/:jobId/applicants" element={<JobApplicants />} />
+          <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
       </Routes>
       <ToastContainer position="top-right" autoClose={3000}/>
       <Footer />
